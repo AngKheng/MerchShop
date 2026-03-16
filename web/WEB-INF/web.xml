@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
-         version="6.0">
-
+<web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
     <!-- Servlet Home -->
     <servlet>
         <servlet-name>HomeServlet</servlet-name>
         <servlet-class>servlet.HomeServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UpdateCartServlet</servlet-name>
+        <servlet-class>servlet.UpdateCartServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
         <url-pattern>/home</url-pattern>
     </servlet-mapping>
-
     <!-- Add to Cart -->
     <servlet>
         <servlet-name>AddToCartServlet</servlet-name>
@@ -23,7 +22,6 @@
         <servlet-name>AddToCartServlet</servlet-name>
         <url-pattern>/addtocart</url-pattern>
     </servlet-mapping>
-
     <!-- View Cart -->
     <servlet>
         <servlet-name>ViewCartServlet</servlet-name>
@@ -33,7 +31,6 @@
         <servlet-name>ViewCartServlet</servlet-name>
         <url-pattern>/cart</url-pattern>
     </servlet-mapping>
-
     <!-- Remove from Cart -->
     <servlet>
         <servlet-name>RemoveFromCartServlet</servlet-name>
@@ -43,7 +40,6 @@
         <servlet-name>RemoveFromCartServlet</servlet-name>
         <url-pattern>/removefromcart</url-pattern>
     </servlet-mapping>
-
     <!-- Checkout -->
     <servlet>
         <servlet-name>CheckoutServlet</servlet-name>
@@ -53,9 +49,11 @@
         <servlet-name>CheckoutServlet</servlet-name>
         <url-pattern>/checkout</url-pattern>
     </servlet-mapping>
-
+    <servlet-mapping>
+        <servlet-name>UpdateCartServlet</servlet-name>
+        <url-pattern>/updatecart</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>
     </welcome-file-list>
-
 </web-app>

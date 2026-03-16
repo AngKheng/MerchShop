@@ -35,20 +35,27 @@
         }
     </style>
 </head>
-<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="home">Merch Của Bạn</a>
-        <div class="ms-auto">
-            <a href="home" class="btn btn-outline-primary me-2">Trang chủ</a>
-            <a href="cart" class="btn btn-outline-success position-relative">
-                Giỏ hàng
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                    ${sessionScope.cart != null ? sessionScope.cart.size() : 0}
-                </span>
-            </a>
+<c:set var="totalQuantity" value="0" />
+    <c:if test="${not empty sessionScope.cart}">
+        <c:forEach var="item" items="${sessionScope.cart}">
+            <c:set var="totalQuantity" value="${totalQuantity + item.quantity}" />
+        </c:forEach>
+    </c:if>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="home">Merch Của Bạn</a>
+            <div class="ms-auto">
+                <a href="home" class="btn btn-outline-primary me-2">Trang chủ</a>
+                <a href="cart" class="btn btn-outline-success position-relative">
+                    Giỏ hàng
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        ${totalQuantity}
+                    </span>
+                </a>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 <body class="bg-light">
 
     <div class="container my-5">
