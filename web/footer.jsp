@@ -8,7 +8,7 @@
                     <ul class="list-unstyled">
                         <li class="mb-2"><a href="home" class="text-decoration-none text-muted">Home</a></li>
                         <li class="mb-2"><a href="home" class="text-decoration-none text-muted">Products</a></li>
-                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Contact</a></li>
+                        <li class="mb-2"><a href="contact" class="text-decoration-none text-muted">Contact</a></li>
                     </ul>
                 </div>
                 

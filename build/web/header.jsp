@@ -101,8 +101,9 @@
     <header class="container-fluid p-0">
         <div class="d-flex justify-content-between align-items-center top-nav">
             <div>
-                <a href="home">Products</a>
-                <a href="#">Contact</a>
+                <a href="home">Product</a>
+                <a href="contact">Contact</a>
+                
             </div>
             <div>
                 <a href="#"><i class="fas fa-search me-1"></i></a>

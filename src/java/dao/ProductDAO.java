@@ -10,11 +10,11 @@ public class ProductDAO {
 
     // Khối static khởi tạo dữ liệu
     static {
-        products.add(new Product(1, "Gaku Doll", 16.00, "image/1.png"));
-        products.add(new Product(2, "Yugamu Doll", 16.00, "image/2.png"));
-        products.add(new Product(3, "Doll Extra", 2.60, "image/3.png"));
+        products.add(new Product(1, "Girl", 16.00, "image/1.png"));
+        products.add(new Product(2, "Aquafina", 16.00, "image/2.png"));
+        products.add(new Product(3, "Koro", 2.60, "image/3.png"));
         products.add(new Product(4, "Cherino Hot Spring", 5.00, "image/cherino-hot-spring.png"));
-        products.add(new Product(5, "OMG Kaw", 4.50, "image/omgkaw.png"));
+        products.add(new Product(5, "Kangel", 4.50, "image/omgkaw.png"));
         
         // Thử thêm sản phẩm số 6 của bạn vào đây:
 //        products.add(new Product(6, "abc", 4.50, "image/abc.png"));
