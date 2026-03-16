@@ -16,7 +16,8 @@ public class AddToCartServlet extends HttpServlet {
         products.add(new Product(1, "Gaku Doll", 16.00, "..."));
         products.add(new Product(2, "Yugamu Doll", 16.00, "..."));
         products.add(new Product(3, "Doll Extra", 2.60, "..."));
-        products.add(new Product(4, "Hundred Line Extra", 5.00, "..."));
+        products.add(new Product(4, "Cherino Hot Spring", 5.00, "..."));
+        products.add(new Product(5, "OMG Kaw", 4.50, "image/omgkaw.png"));
         return products;
     }
 

@@ -44,7 +44,7 @@
         </table>
 
         <h4>Tổng tiền: <span class="text-danger">$${total}</span></h4>
-        <h5>Số sản phẩm đã chọn: ${cart.size()} loại</h5>
+        <h5>Số sản phẩm đã chọn: ${cart.size()}</h5>
 
         <c:if test="${not empty cart}">
             <form action="checkout" method="post">
