@@ -1,5 +1,6 @@
 package servlet;
 
+import dao.ProductDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import model.CartItem;
@@ -10,16 +11,8 @@ import java.util.List;
 
 public class AddToCartServlet extends HttpServlet {
 
-    private List<Product> getSampleProducts() {
-        // giống hàm ở HomeServlet (có thể tách ra class chung sau)
-        List<Product> products = new ArrayList<>();
-        products.add(new Product(1, "Gaku Doll", 16.00, "..."));
-        products.add(new Product(2, "Yugamu Doll", 16.00, "..."));
-        products.add(new Product(3, "Doll Extra", 2.60, "..."));
-        products.add(new Product(4, "Cherino Hot Spring", 5.00, "..."));
-        products.add(new Product(5, "OMG Kaw", 4.50, "image/omgkaw.png"));
-        return products;
-    }
+    // Khởi tạo trực tiếp từ class ProductDAO
+    private final ProductDAO productDAO = new ProductDAO();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
@@ -33,9 +26,8 @@ public class AddToCartServlet extends HttpServlet {
             cart = new ArrayList<>();
         }
 
-        Product product = getSampleProducts().stream()
-                .filter(p -> p.getId() == productId)
-                .findFirst().orElse(null);
+        // Tìm sản phẩm
+        Product product = productDAO.getProductById(productId);
 
         if (product != null) {
             boolean found = false;
