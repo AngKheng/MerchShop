@@ -125,4 +125,29 @@ public class ProductDAO extends DBContext {
             System.out.println("Lỗi updateProduct: " + e.getMessage());
         }
     }
+    // 7. Hàm tìm kiếm sản phẩm theo tên
+    public List<Product> searchProductsByName(String keyword) {
+        List<Product> list = new ArrayList<>();
+        // Lệnh LIKE %...% giúp tìm kiếm gần đúng. VD: gõ "kan" sẽ ra "Kanade"
+        String sql = "SELECT * FROM products WHERE name LIKE ? ORDER BY id DESC"; 
+        
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, "%" + keyword + "%"); 
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                // Nhớ đúc khuôn với đủ 9 nguyên liệu nhé
+                list.add(new Product(
+                    rs.getInt("id"), rs.getString("name"), rs.getDouble("price"),
+                    rs.getString("image"), rs.getString("description"), 
+                    rs.getString("type"), rs.getInt("quantity"), 
+                    rs.getDouble("sale_price"), rs.getBoolean("is_sold_out")
+                ));
+            }
+        } catch (Exception e) { 
+            System.out.println("Lỗi searchProductsByName: " + e.getMessage()); 
+        }
+        return list;
+    }
 }

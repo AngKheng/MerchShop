@@ -105,10 +105,19 @@
                 <a href="contact">Contact</a>
                 
             </div>
-            <div>
-                <a href="#"><i class="fas fa-search me-1"></i></a>
-                <a href="cart" class="ms-3">
-                    <i class="fas fa-shopping-cart me-1"></i> ${totalQuantity}
+<div class="d-flex align-items-center">
+                <form action="home" method="get" class="m-0 position-relative">
+                    <input type="text" name="search" class="form-control form-control-sm rounded-pill pe-4" 
+                           placeholder="Search..." value="${param.search}" 
+                           style="width: 180px; font-size: 0.85rem; border: 1px solid #ccc;">
+                    <button type="submit" class="btn btn-sm position-absolute top-50 end-0 translate-middle-y border-0 bg-transparent text-muted">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                
+                <a href="cart" class="ms-4 text-dark text-decoration-none">
+                    <i class="fas fa-shopping-cart fs-5"></i> 
+                    <span class="badge bg-danger rounded-pill translate-middle" style="font-size: 0.7rem;">${totalQuantity}</span>
                 </a>
             </div>
         </div>

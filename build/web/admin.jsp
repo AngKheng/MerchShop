@@ -42,21 +42,23 @@
 
     <div class="main-content">
         <h2 class="mb-4">Bảng điều khiển (Dashboard)</h2>
-        <div class="row mb-5">
+<div class="row mb-5">
             <div class="col-md-4">
-                <div class="card card-stat bg-primary text-white p-4">
-                    <h4>Tổng Sản Phẩm</h4><h2>0</h2>
+                <div class="card card-stat bg-primary text-white p-4 shadow-sm">
+                    <h4>Tổng Sản Phẩm</h4>
+                    <h2 class="fw-bold">${totalProducts != null ? totalProducts : 0}</h2>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card card-stat bg-success text-white p-4">
-                    <h4>Đơn Hàng Mới</h4><h2>0</h2>
+                <div class="card card-stat bg-success text-white p-4 shadow-sm">
+                    <h4>Đơn Hàng</h4>
+                    <h2 class="fw-bold">${totalOrders != null ? totalOrders : 0}</h2>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card card-stat bg-warning text-dark p-4">
-                    <h4>Tin nhắn chờ</h4><h2>0</h2>
-                </div>
+                <div class="card card-stat bg-warning text-dark p-4 shadow-sm">
+                    <h4>Tin nhắn chờ</h4>
+                    <h2>0</h2> </div>
             </div>
         </div>
         <div class="card card-stat p-4">

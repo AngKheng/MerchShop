@@ -11,29 +11,31 @@ public class HomeServlet extends HttpServlet {
 
     private final ProductDAO productDAO = new ProductDAO();
 
-    @Override
+@Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) 
             throws ServletException, IOException {
         
-        // 1. Lấy chữ mà người dùng vừa click trên thanh menu (ví dụ: "FFXIV")
         String type = req.getParameter("type");
-        List<Product> products;
+        String search = req.getParameter("search"); // Lấy chữ khách gõ từ thanh tìm kiếm
+        
+        ProductDAO dao = new ProductDAO();
+        List<Product> list;
 
-        // 2. Kiểm tra xem người dùng muốn xem gì
-        if (type != null && !type.isEmpty() && !type.equals("All")) {
-            // Nếu có chữ type và nó KHÔNG PHẢI là "All" -> Gọi hàm lọc
-            products = productDAO.getProductsByType(type);
+        // Phân luồng logic
+        if (search != null && !search.trim().isEmpty()) {
+            // 1. Nếu có gõ tìm kiếm
+            list = dao.searchProductsByName(search);
+        } else if (type != null && !type.equals("All")) {
+            // 2. Nếu bấm chọn danh mục
+            list = dao.getProductsByType(type);
+            req.setAttribute("selectedCategory", type);
         } else {
-            // Nếu vừa vào web (type null) hoặc bấm chữ "All" -> Gọi hàm lấy tất cả
-            products = productDAO.getAllProducts();
+            // 3. Mặc định hiện tất cả
+            list = dao.getAllProducts();
+            req.setAttribute("selectedCategory", "All");
         }
-        
-        // 3. Đóng gói sản phẩm gửi sang JSP
-        req.setAttribute("products", products);
-        
-        // (Tùy chọn) Gửi kèm tên danh mục đang chọn để in ra màn hình cho đẹp
-        req.setAttribute("selectedCategory", type != null ? type : "All");
-        
+
+        req.setAttribute("products", list);
         req.getRequestDispatcher("/index.jsp").forward(req, resp);
     }
 }
