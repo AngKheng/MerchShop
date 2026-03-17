@@ -6,7 +6,6 @@ import dao.ProductDAO;
 import utils.CloudinaryConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.util.Map;
@@ -29,6 +28,7 @@ public class AddProductServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
             throws ServletException, IOException {
         
+        req.setCharacterEncoding("UTF-8"); // Đảm bảo tiếng Việt không bị lỗi
         resp.setContentType("text/html;charset=UTF-8");
         System.out.println("=== BẮT ĐẦU XỬ LÝ UPLOAD VÀ LƯU DATABASE ===");
 
@@ -38,6 +38,10 @@ public class AddProductServlet extends HttpServlet {
             String price = req.getParameter("price");
             String type = req.getParameter("type");               
             String description = req.getParameter("description"); 
+            
+            // Lấy thêm số lượng. Nếu form chưa có ô nhập quantity thì mặc định là 100
+            String quantityStr = req.getParameter("quantity");
+            int quantity = (quantityStr != null && !quantityStr.isEmpty()) ? Integer.parseInt(quantityStr) : 100;
 
             // 2. Lấy dữ liệu file (Ảnh)
             Part filePart = req.getPart("imageFile"); 
@@ -59,8 +63,8 @@ public class AddProductServlet extends HttpServlet {
                 double priceValue = Double.parseDouble(price);
                 ProductDAO dao = new ProductDAO();
                 
-                // Truyền 5 tham số vào Database
-                dao.insertProduct(name, priceValue, imageUrl, description, type);
+                // ĐÃ SỬA LỖI: Truyền đủ 6 tham số vào Database
+                dao.insertProduct(name, priceValue, imageUrl, description, type, quantity);
                 System.out.println("-> Đã lưu vào Database!");
                 
                 // 5. Chuyển hướng thẳng về trang chủ (home)

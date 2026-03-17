@@ -20,7 +20,8 @@ public class ProductDAO extends DBContext {
                 list.add(new Product(
                     rs.getInt("id"), rs.getString("name"), rs.getDouble("price"),
                     rs.getString("image"), rs.getString("description"), 
-                    rs.getString("type") // Đọc thêm cột type
+                    rs.getString("type"), rs.getInt("quantity"),rs.getDouble("sale_price"), 
+    rs.getBoolean("is_sold_out")
                 ));
             }
         } catch (Exception e) { System.out.println("Lỗi getAllProducts: " + e.getMessage()); }
@@ -38,7 +39,8 @@ public class ProductDAO extends DBContext {
                 return new Product(
                     rs.getInt("id"), rs.getString("name"), rs.getDouble("price"),
                     rs.getString("image"), rs.getString("description"), 
-                    rs.getString("type") // Đọc thêm cột type
+                    rs.getString("type"),  rs.getInt("quantity"),rs.getDouble("sale_price"), 
+    rs.getBoolean("is_sold_out") // Đọc thêm cột type
                 );
             }
         } catch (Exception e) { System.out.println("Lỗi getProductById: " + e.getMessage()); }
@@ -46,19 +48,26 @@ public class ProductDAO extends DBContext {
     }
 
     // 3. Cập nhật hàm insertProduct để ghi thêm cột type
-    public void insertProduct(String name, double price, String image, String description, String type) {
-        // Thêm type vào câu lệnh SQL và VALUES có 5 dấu hỏi chấm
-        String sql = "INSERT INTO products (name, price, image, description, type) VALUES (?, ?, ?, ?, ?)";
+// 1. Sửa tham số truyền vào (Thêm int quantity)
+    public void insertProduct(String name, double price, String image, String description, String type, int quantity) {
+        
+        // 2. Sửa câu SQL (Thêm chữ quantity và 1 dấu ? nữa thành 6 dấu hỏi)
+        String sql = "INSERT INTO products (name, price, image, description, type, quantity) VALUES (?, ?, ?, ?, ?, ?)";
+        
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, name);
             ps.setDouble(2, price);
             ps.setString(3, image);
             ps.setString(4, description);
-            ps.setString(5, type); // Set giá trị cho cột type
+            ps.setString(5, type);
+            // 3. Truyền giá trị cho dấu hỏi số 6
+            ps.setInt(6, quantity); 
             
             ps.executeUpdate();
-        } catch (Exception e) { System.out.println("Lỗi insertProduct: " + e.getMessage()); }
+        } catch (Exception e) { 
+            System.out.println("Lỗi insertProduct: " + e.getMessage()); 
+        }
     }
     // 4. Hàm lọc sản phẩm theo Danh mục (Type)
     public List<Product> getProductsByType(String type) {
@@ -75,12 +84,45 @@ public class ProductDAO extends DBContext {
                 list.add(new Product(
                     rs.getInt("id"), rs.getString("name"), rs.getDouble("price"),
                     rs.getString("image"), rs.getString("description"), 
-                    rs.getString("type")
+                    rs.getString("type"), rs.getInt("quantity"), rs.getDouble("sale_price"), 
+    rs.getBoolean("is_sold_out")
                 ));
             }
         } catch (Exception e) { 
             System.out.println("Lỗi getProductsByType: " + e.getMessage()); 
         }
         return list;
+    }
+    // 5. Hàm Xóa sản phẩm theo ID
+    public void deleteProduct(int id) {
+        String sql = "DELETE FROM products WHERE id = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, id); // Lắp ID cần xóa vào dấu hỏi chấm
+            ps.executeUpdate();
+            System.out.println("-> Đã xóa thành công sản phẩm ID: " + id);
+        } catch (Exception e) {
+            System.out.println("Lỗi deleteProduct: " + e.getMessage());
+        }
+    }
+    // 6. Hàm Cập nhật (Sửa) sản phẩm
+    public void updateProduct(int id, String name, double price, String image, String description, String type, int quantity, double salePrice, boolean isSoldOut) {
+        String sql = "UPDATE products SET name = ?, price = ?, image = ?, description = ?, type = ?, quantity = ?, sale_price = ?, is_sold_out = ? WHERE id = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, name);
+            ps.setDouble(2, price);
+            ps.setString(3, image);
+            ps.setString(4, description);
+            ps.setString(5, type);
+            ps.setInt(6, quantity);
+            ps.setDouble(7, salePrice);
+            ps.setBoolean(8, isSoldOut);
+            ps.setInt(9, id); // id nằm ở cuối cùng theo đúng thứ tự câu lệnh SQL
+            ps.executeUpdate();
+            System.out.println("-> Đã cập nhật thành công sản phẩm ID: " + id);
+        } catch (Exception e) {
+            System.out.println("Lỗi updateProduct: " + e.getMessage());
+        }
     }
 }
