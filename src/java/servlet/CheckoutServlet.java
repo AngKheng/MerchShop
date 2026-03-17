@@ -73,15 +73,13 @@ public class CheckoutServlet extends HttpServlet {
         vnp_Params.put("vnp_ReturnUrl", VNPayConfig.vnp_ReturnUrl);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
-// 6. Tạo ngày giờ tạo đơn và giờ hết hạn (15 phút) - Ép múi giờ Asia/Ho_Chi_Minh
+// 6. Tạo ngày giờ (Dùng ZonedDateTime để ép múi giờ)
         java.time.ZonedDateTime now = java.time.ZonedDateTime.now(java.time.ZoneId.of("Asia/Ho_Chi_Minh"));
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
-        // Ngày tạo đơn (vnp_CreateDate)
         String vnp_CreateDate = now.format(formatter);
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-        // Ngày hết hạn (vnp_ExpireDate) - Cộng thêm 15 phút
         String vnp_ExpireDate = now.plusMinutes(15).format(formatter);
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
