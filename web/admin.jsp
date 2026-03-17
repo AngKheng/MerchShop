@@ -1,4 +1,6 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -59,8 +61,70 @@
             </div>
         </div>
         <div class="card card-stat p-4">
-            <h4 class="mb-3">Chào mừng bạn đến với trang Quản trị!</h4>
-            <p class="text-muted">Giao diện đã sẵn sàng. Bạn có thể bấm vào "Thêm Sản phẩm" ở menu bên trái để trải nghiệm.</p>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="m-0 text-dark fw-bold">Danh sách Sản phẩm</h4>
+                <a href="addproduct" class="btn btn-success" style="background-color: #92c375; border: none;">
+                    <i class="fas fa-plus-circle me-1"></i> Thêm mới
+                </a>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-hover align-middle text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Hình ảnh</th>
+                            <th class="text-start">Tên sản phẩm</th>
+                            <th>Phân loại</th>
+                            <th>Giá gốc</th>
+                            <th>Giá Sale</th>
+                            <th>Kho</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="p" items="${listP}">
+                            <tr>
+                                <td>#${p.id}</td>
+                                <td>
+                                    <img src="${p.image}" alt="img" style="width: 55px; height: 55px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
+                                </td>
+                                <td class="text-start fw-bold">${p.name}</td>
+                                <td><span class="badge bg-secondary">${p.type}</span></td>
+                                <td class="${p.salePrice > 0 ? 'text-decoration-line-through text-muted' : 'fw-bold'}">
+                                    <fmt:formatNumber value="${p.price}" type="currency" currencySymbol="$"/>
+                                </td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${p.salePrice > 0}">
+                                            <span class="text-danger fw-bold"><fmt:formatNumber value="${p.salePrice}" type="currency" currencySymbol="$"/></span>
+                                        </c:when>
+                                        <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td class="fw-bold ${p.quantity <= 10 ? 'text-danger' : 'text-success'}">${p.quantity}</td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${p.soldOut || p.quantity <= 0}">
+                                            <span class="badge bg-danger p-2">Sold Out</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="badge bg-success p-2">Còn hàng</span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>
+                                    <a href="loadproduct?id=${p.id}" class="btn btn-sm btn-outline-primary" title="Sửa"><i class="fas fa-edit"></i></a>
+                                    <a href="deleteproduct?id=${p.id}" class="btn btn-sm btn-outline-danger" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này vĩnh viễn không?');">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </body>

@@ -21,19 +21,19 @@
     <label>Số lượng kho:</label><br>
     <input type="number" name="quantity" required value="100" style="width: 100%; padding: 8px;">
 </div>
-        <div style="margin-bottom: 15px;">
-            <label>Phân loại (Category):</label><br>
-            <select name="type" required style="width: 100%; padding: 8px;">
-                <option value="FFXIV">FFXIV</option>
-                <option value="Charms">Charms</option>
-                <option value="Standees">Standees</option>
-                <option value="Books">Books</option>
-                <option value="Dungeon Meshi">Dungeon Meshi</option>
-                <option value="Wuthering Waves">Wuthering Waves</option>
-                <option value="The Hundred Line">The Hundred Line</option>
-                <option value="Others">Others</option>
-            </select>
-        </div>
+<div style="margin-bottom: 15px;">
+    <label>Phân loại:</label><br>
+    <select name="type" class="form-select" required style="width: 100%; padding: 8px;">
+        <option value="FFXIV">FFXIV</option>
+        <option value="Charms">Charms</option>
+        <option value="Standees">Standees</option>
+        <option value="Books">Books</option>
+        <option value="Dungeon Meshi">Dungeon Meshi</option>
+        <option value="Wuthering Waves">Wuthering Waves</option>
+        <option value="The Hundred Line">The Hundred Line</option>
+        <option value="Others">Others</option>
+    </select>
+</div>
 
         <div style="margin-bottom: 15px;">
             <label>Mô tả chi tiết:</label><br>
