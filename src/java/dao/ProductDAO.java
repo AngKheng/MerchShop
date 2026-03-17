@@ -1,37 +1,78 @@
 package dao;
 
 import model.Product;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductDAO {
-    // Dùng static để danh sách này chỉ tạo 1 lần và tồn tại mãi trong bộ nhớ
-    private static final List<Product> products = new ArrayList<>();
+// Kế thừa DBContext để có sẵn biến 'connection'
+public class ProductDAO extends DBContext {
 
-    // Khối static khởi tạo dữ liệu
-    static {
-        products.add(new Product(1, "Girl", 16.00, "image/1.png"));
-        products.add(new Product(2, "Aquafina", 16.00, "image/2.png"));
-        products.add(new Product(3, "Koro", 2.60, "image/3.png"));
-        products.add(new Product(4, "Cherino Hot Spring", 5.00, "image/cherino-hot-spring.png"));
-        products.add(new Product(5, "Kangel", 4.50, "image/omgkaw.png"));
-        
-        // Thử thêm sản phẩm số 6 của bạn vào đây:
-//        products.add(new Product(6, "abc", 4.50, "image/abc.png"));
-//        products.add(new Product(7, "ád", 4.50, "image/abc.png"));
-        
-    }
-
-    // Hàm trả về toàn bộ danh sách
+    // 1. Hàm lấy toàn bộ sản phẩm từ SQL Server để in ra trang chủ
     public List<Product> getAllProducts() {
-        return products;
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT * FROM products ORDER BY id DESC"; // Lấy sp mới nhất lên đầu
+        
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                list.add(new Product(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getDouble("price"),
+                    rs.getString("image"),
+                    rs.getString("description")
+                ));
+            }
+        } catch (Exception e) {
+            System.out.println("Lỗi lấy danh sách sản phẩm: " + e.getMessage());
+        }
+        return list;
     }
 
-    // Hàm tìm sản phẩm theo ID
+    // 2. Hàm thêm sản phẩm mới vào SQL Server (sau khi có link Cloudinary)
+    public void insertProduct(String name, double price, String image, String description) {
+        String sql = "INSERT INTO products (name, price, image, description) VALUES (?, ?, ?, ?)";
+        
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, name);
+            ps.setDouble(2, price);
+            ps.setString(3, image);
+            ps.setString(4, description);
+            
+            ps.executeUpdate(); // Chạy lệnh Insert
+            System.out.println("Đã lưu sản phẩm vào Database thành công!");
+        } catch (Exception e) {
+            System.out.println("Lỗi lưu sản phẩm: " + e.getMessage());
+        }
+    }
+    // 3. Hàm lấy 1 sản phẩm dựa vào ID (Dùng cho Trang chi tiết và Thêm Giỏ hàng)
     public Product getProductById(int id) {
-        return products.stream()
-                .filter(p -> p.getId() == id)
-                .findFirst()
-                .orElse(null);
+        String sql = "SELECT * FROM products WHERE id = ?";
+        
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, id); // Truyền số ID người dùng click vào dấu hỏi chấm
+            
+            ResultSet rs = ps.executeQuery();
+            
+            // Nếu tìm thấy dòng dữ liệu phù hợp
+            if (rs.next()) {
+                return new Product(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getDouble("price"),
+                    rs.getString("image"),
+                    rs.getString("description")
+                );
+            }
+        } catch (Exception e) {
+            System.out.println("Lỗi lấy sản phẩm theo ID: " + e.getMessage());
+        }
+        return null; // Trả về null nếu không tìm thấy
     }
 }
