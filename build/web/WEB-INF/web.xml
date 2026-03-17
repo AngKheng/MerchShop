@@ -21,6 +21,10 @@
         <servlet-name>AddProductServlet</servlet-name>
         <servlet-class>servlet.AddProductServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>VNPayReturnServlet</servlet-name>
+        <servlet-class>servlet.VNPayReturnServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -76,6 +80,10 @@
     <servlet-mapping>
         <servlet-name>AddProductServlet</servlet-name>
         <url-pattern>/addproduct</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>VNPayReturnServlet</servlet-name>
+        <url-pattern>/vnpay-return</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>

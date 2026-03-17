@@ -3,7 +3,7 @@
     <footer class="mt-5 pt-5 pb-5" style="border-top: 1px solid #e2e2e2;">
         <div class="container" style="max-width: 900px;"> <div class="row text-start">
                 
-                <div class="col-md-3 mb-4">
+                <div class="col-md-3 mb-3">
                     <h6 class="fw-bold mb-3 text-dark">Shop</h6>
                     <ul class="list-unstyled">
                         <li class="mb-2"><a href="home" class="text-decoration-none text-muted">Home</a></li>
@@ -12,7 +12,7 @@
                     </ul>
                 </div>
                 
-                <div class="col-md-3 mb-4">
+                <div class="col-md-3 mb-3">
                     <h6 class="fw-bold mb-3 text-dark">Categories</h6>
                     <ul class="list-unstyled">
                         <li class="mb-2"><a href="home?type=FFXIV" class="text-decoration-none text-muted">FFXIV</a></li>
@@ -26,17 +26,12 @@
                     </ul>
                 </div>
                 
-                <div class="col-md-3 mb-4">
+                <div class="col-md-3 mb-3">
                     <h6 class="fw-bold mb-3 text-dark">Follow us</h6>
                     <a href="#" class="text-decoration-none text-muted">
                         <i class="fa-brands fa-x-twitter fs-5 me-1 text-dark"></i> X
                     </a>
                 </div>
-                
-                <div class="col-md-3 mb-4">
-                    <h5 class="fw-bold text-dark" style="letter-spacing: -1px;">BIG CARTEL</h5>
-                </div>
-                
             </div>
         </div>
     </footer>

@@ -100,9 +100,7 @@
                 </div>
                 <div class="col-md-6 text-end">
                     <h4 class="mb-3 text-dark">Tổng tiền: <span class="text-danger fw-bold"><fmt:formatNumber value="${total}" type="currency" currencySymbol="$"/></span></h4>
-                    <form action="checkout" method="post">
-                        <button type="submit" class="btn btn-success btn-lg px-5 shadow-sm" style="background-color: #92c375; border: none;">Thanh toán ngay</button>
-                    </form>
+                    <a href="checkout.jsp" class="btn btn-success btn-lg px-5 shadow-sm" style="background-color: #92c375; border: none; text-decoration: none;">Thanh toán ngay</a>
                 </div>
             </div>
         </c:otherwise>
