@@ -15,14 +15,14 @@
                 <div class="col-md-3 mb-4">
                     <h6 class="fw-bold mb-3 text-dark">Categories</h6>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">FFXIV</a></li>
-                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Charms</a></li>
-                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Standees</a></li>
-                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Others</a></li>
-                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Books</a></li>
-                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Dungeon Meshi</a></li>
-                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Wuthering Waves</a></li>
-                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">The Hundred Line</a></li>
+                        <li class="mb-2"><a href="home?type=FFXIV" class="text-decoration-none text-muted">FFXIV</a></li>
+                        <li class="mb-2"><a href="home?type=Charms" class="text-decoration-none text-muted">Charms</a></li>
+                        <li class="mb-2"><a href="home?type=Standees" class="text-decoration-none text-muted">Standees</a></li>
+                        <li class="mb-2"><a href="home?type=Others" class="text-decoration-none text-muted">Others</a></li>
+                        <li class="mb-2"><a href="home?type=Books" class="text-decoration-none text-muted">Books</a></li>
+                        <li class="mb-2"><a href="home?type=Dungeon Meshi" class="text-decoration-none text-muted">Dungeon Meshi</a></li>
+                        <li class="mb-2"><a href="home?type=Wuthering Waves" class="text-decoration-none text-muted">Wuthering Waves</a></li>
+                        <li class="mb-2"><a href="home?type=The Hundred Line" class="text-decoration-none text-muted">The Hundred Line</a></li>
                     </ul>
                 </div>
                 

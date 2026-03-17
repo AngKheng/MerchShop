@@ -35,15 +35,7 @@
                 </button>
             </form>
 
-            <div class="text-dark" style="font-size: 0.9rem; line-height: 1.6;">
-                <p>This is a listing for the extra costs for The Hundred Line Gaku and Yugamu Dolls.</p>
-                <p>Please add 1 [Extra Costs per plushie] for every plushie you have in your order.<br>
-                Please add 1 [Yugamu Tax] for every Yugamu plushie in your order.</p>
-                <p>This means that if you ordered all 4 plushies, with one Yugamu:<br>
-                You will add 4 [Extra Costs per plushie] and 1 [Yugamu Tax]</p>
-                <p>Please also make sure to write your previous order (or orders) number in the Notes so that I am able to link it back to your previous order! I will not ship out any orders until these extra costs have been paid ;w;!<br>
-                Thank you for your understanding!</p>
-            </div>
+<div class="text-dark mt-4" style="font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap; text-align: justify;">${product.description}</div>
         </div>
     </div>
 </main>
