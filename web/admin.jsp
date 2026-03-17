@@ -28,15 +28,14 @@
     </style>
 </head>
 <body>
-    <div class="sidebar">
+<div class="sidebar">
         <h3 class="text-white text-center mb-4 fw-bold">ADMIN PANEL</h3>
-        <a href="admin" class="active"><i class="fas fa-tachometer-alt me-2"></i> Tổng quan</a>
         
-        <a href="addproduct"><i class="fas fa-plus-circle me-2"></i> Thêm Sản phẩm</a>
+        <a href="admin" class="active"><i class="fas fa-box me-2"></i> Tổng quan Sản phẩm</a>
         
-        <a href="#"><i class="fas fa-box me-2"></i> Quản lý Sản phẩm</a>
-        <a href="#"><i class="fas fa-shopping-cart me-2"></i> Quản lý Đơn hàng</a>
-        <a href="#"><i class="fas fa-envelope me-2"></i> Tin nhắn Liên hệ</a>
+        <a href="adminorder"><i class="fas fa-shopping-cart me-2"></i> Quản lý Đơn hàng</a>
+        
+        <a href="admin-contacts"><i class="fas fa-envelope me-2"></i> Tin nhắn Liên hệ</a>
         
         <a href="home" class="mt-5 text-warning"><i class="fas fa-store me-2"></i> Về cửa hàng</a>
     </div>

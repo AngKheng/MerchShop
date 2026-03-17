@@ -34,11 +34,19 @@ public class VNPayReturnServlet extends HttpServlet {
                 }
             }
             
-            // 3. LƯU VÀO DATABASE
-            // Chỉ lưu nếu có thông tin tên khách (tránh việc khách F5 lại trang return bị lưu đúp)
+// 3. LƯU VÀO DATABASE (Cả Đơn hàng và Chi tiết đơn)
             if (name != null) {
                 OrderDAO dao = new OrderDAO();
-                dao.insertOrder(name, phone, address, email, totalAmount, "Đã thanh toán (VNPay)");
+                
+                // Bước 3.1: Lưu thông tin khách và lấy ID Đơn hàng về
+                int newOrderId = dao.insertOrderReturnId(name, phone, address, email, totalAmount, "Đã thanh toán (VNPay)");
+                
+                // Bước 3.2: Nếu tạo đơn thành công, vòng lặp lưu từng món trong giỏ vào Database
+                if (newOrderId > 0 && cart != null) {
+                    for (CartItem item : cart) {
+                        dao.insertOrderDetail(newOrderId, item.getProduct().getId(), item.getQuantity(), item.getProduct().getPrice());
+                    }
+                }
             }
             
             // 4. DỌN DẸP SESSION (Xóa giỏ hàng và thông tin cá nhân)
