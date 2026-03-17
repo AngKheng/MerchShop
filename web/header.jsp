@@ -125,11 +125,11 @@
                 <a href="home?type=FFXIV" style="${selectedCategory eq 'FFXIV' ? 'color: #000; text-decoration: underline; font-weight: bold;' : ''}">FFXIV</a>
                 <a href="home?type=Charms" style="${selectedCategory eq 'Charms' ? 'color: #000; text-decoration: underline; font-weight: bold;' : ''}">Charms</a>
                 <a href="home?type=Standees" style="${selectedCategory eq 'Standees' ? 'color: #000; text-decoration: underline; font-weight: bold;' : ''}">Standees</a>
-                <a href="home?type=Others" style="${selectedCategory eq 'Others' ? 'color: #000; text-decoration: underline; font-weight: bold;' : ''}">Others</a>
                 <a href="home?type=Books" style="${selectedCategory eq 'Books' ? 'color: #000; text-decoration: underline; font-weight: bold;' : ''}">Books</a>
                 <a href="home?type=Dungeon Meshi" style="${selectedCategory eq 'Dungeon Meshi' ? 'color: #000; text-decoration: underline; font-weight: bold;' : ''}">Dungeon Meshi</a>
                 <a href="home?type=Wuthering Waves" style="${selectedCategory eq 'Wuthering Waves' ? 'color: #000; text-decoration: underline; font-weight: bold;' : ''}">Wuthering Waves</a>
                 <a href="home?type=The Hundred Line" style="${selectedCategory eq 'The Hundred Line' ? 'color: #000; text-decoration: underline; font-weight: bold;' : ''}">The Hundred Line</a>
+                <a href="home?type=Others" style="${selectedCategory eq 'Others' ? 'color: #000; text-decoration: underline; font-weight: bold;' : ''}">Others</a>
             </div>
         </div>
     </header>
