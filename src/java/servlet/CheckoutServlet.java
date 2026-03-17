@@ -70,14 +70,16 @@ public class CheckoutServlet extends HttpServlet {
         vnp_Params.put("vnp_ReturnUrl", VNPayConfig.vnp_ReturnUrl);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
-        // 6. Tạo ngày giờ tạo đơn và giờ hết hạn (15 phút)
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        String vnp_CreateDate = formatter.format(cld.getTime());
+// 6. Tạo ngày giờ tạo đơn và giờ hết hạn (15 phút) - Ép múi giờ Asia/Ho_Chi_Minh
+        java.time.ZonedDateTime now = java.time.ZonedDateTime.now(java.time.ZoneId.of("Asia/Ho_Chi_Minh"));
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
+        // Ngày tạo đơn (vnp_CreateDate)
+        String vnp_CreateDate = now.format(formatter);
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
-        
-        cld.add(Calendar.MINUTE, 15);
-        String vnp_ExpireDate = formatter.format(cld.getTime());
+
+        // Ngày hết hạn (vnp_ExpireDate) - Cộng thêm 15 phút
+        String vnp_ExpireDate = now.plusMinutes(15).format(formatter);
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
         // 7. Build chuỗi Query và Mã hóa bảo mật (Chuẩn hóa của VNPay)
