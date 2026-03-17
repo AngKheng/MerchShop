@@ -1,5 +1,6 @@
 package utils;
 
+import jakarta.servlet.http.HttpServletRequest;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
@@ -13,7 +14,7 @@ public class VNPayConfig {
     
     // 2. Đường link VNPay sẽ "bẻ lái" trả khách hàng về sau khi quẹt thẻ xong
     // Lưu ý: Đảm bảo đúng cổng 9999 và tên project /SellingMerch của bạn
-    public static String vnp_ReturnUrl = "http://localhost:9999/SellingMerch/vnpay-return";
+    public static String vnp_ReturnUrl = "https://merchshop.onrender.com/vnpay-return";
 
     // Thuật toán băm bảo mật dữ liệu (Copy chuẩn theo tài liệu VNPay)
     public static String hmacSHA512(final String key, final String data) {
@@ -47,4 +48,16 @@ public class VNPayConfig {
         }
         return sb.toString();
     }
+    public static String getIpAddress(HttpServletRequest request) {
+    String ipAdress;
+    try {
+        ipAdress = request.getHeader("X-FORWARDED-FOR");
+        if (ipAdress == null) {
+            ipAdress = request.getRemoteAddr();
+        }
+    } catch (Exception e) {
+        ipAdress = "Invalid IP:" + e.getMessage();
+    }
+    return ipAdress;
+}
 }

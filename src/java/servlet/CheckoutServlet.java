@@ -53,7 +53,7 @@ public class CheckoutServlet extends HttpServlet {
         
         // 5. Chuẩn bị các tham số gửi sang VNPay
         String vnp_TxnRef = VNPayConfig.getRandomNumber(8); // Mã đơn hàng ngẫu nhiên
-        String vnp_IpAddr = "127.0.0.1"; // IP local
+        String vnp_IpAddr = VNPayConfig.getIpAddress(req); // Lấy IP thực của khách hàng
         String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
 
         Map<String, String> vnp_Params = new HashMap<>();
