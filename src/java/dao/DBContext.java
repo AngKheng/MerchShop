@@ -10,11 +10,9 @@ public class DBContext {
 
     public DBContext() {
         try {
-            String user = "sa";
-            String pass = "123"; 
-            
-            String url = "jdbc:sqlserver://localhost:1433;databaseName=MerchShopDB;encrypt=true;trustServerCertificate=true;";
-            
+            String url = "jdbc:sqlserver://MerchShopDB.mssql.somee.com:1433;databaseName=MerchShopDB;encrypt=true;trustServerCertificate=true;";
+String user = "AnhKheng_SQLLogin_1";
+String pass = "o7lgqrr2s7";            
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             connection = DriverManager.getConnection(url, user, pass);
             

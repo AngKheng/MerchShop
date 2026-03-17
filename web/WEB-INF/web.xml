@@ -45,6 +45,10 @@
         <servlet-name>AdminOrderServlet</servlet-name>
         <servlet-class>servlet.AdminOrderServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>AdminLoginServlet</servlet-name>
+        <servlet-class>servlet.AdminLoginServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -125,6 +129,24 @@
         <servlet-name>AdminOrderServlet</servlet-name>
         <url-pattern>/adminorder</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminLoginServlet</servlet-name>
+        <url-pattern>/admin-login</url-pattern>
+    </servlet-mapping>
+    <filter>
+        <filter-name>AdminAuthFilter</filter-name>
+        <filter-class>filter.AdminAuthFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>AdminAuthFilter</filter-name>
+        <url-pattern>/admin</url-pattern>
+        <url-pattern>/adminorder</url-pattern>
+        <url-pattern>/addproduct</url-pattern>
+        <url-pattern>/editproduct</url-pattern>
+        <url-pattern>/deleteproduct</url-pattern>
+        <url-pattern>/loadproduct</url-pattern>
+    </filter-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>
     </welcome-file-list>
