@@ -25,6 +25,10 @@
         <servlet-name>VNPayReturnServlet</servlet-name>
         <servlet-class>servlet.VNPayReturnServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>AdminServlet</servlet-name>
+        <servlet-class>servlet.AdminServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -84,6 +88,10 @@
     <servlet-mapping>
         <servlet-name>VNPayReturnServlet</servlet-name>
         <url-pattern>/vnpay-return</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminServlet</servlet-name>
+        <url-pattern>/admin</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>

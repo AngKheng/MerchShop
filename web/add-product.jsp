@@ -17,7 +17,10 @@
             <label>Giá tiền ($):</label><br>
             <input type="number" step="0.01" name="price" required style="width: 100%; padding: 8px;">
         </div>
-
+        <div style="margin-bottom: 15px;">
+    <label>Số lượng kho:</label><br>
+    <input type="number" name="quantity" required value="100" style="width: 100%; padding: 8px;">
+</div>
         <div style="margin-bottom: 15px;">
             <label>Phân loại (Category):</label><br>
             <select name="type" required style="width: 100%; padding: 8px;">
