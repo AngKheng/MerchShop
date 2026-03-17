@@ -22,10 +22,6 @@
         <servlet-class>servlet.AddProductServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>VNPayReturnServlet</servlet-name>
-        <servlet-class>servlet.VNPayReturnServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>AdminServlet</servlet-name>
         <servlet-class>servlet.AdminServlet</servlet-class>
     </servlet>
@@ -104,10 +100,6 @@
     <servlet-mapping>
         <servlet-name>AddProductServlet</servlet-name>
         <url-pattern>/addproduct</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>VNPayReturnServlet</servlet-name>
-        <url-pattern>/vnpay-return</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AdminServlet</servlet-name>
