@@ -1,6 +1,7 @@
 package servlet;
 
 import dao.OrderDAO;
+import dao.ProductDAO; // THÊM IMPORT NÀY
 import model.CartItem;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -35,22 +36,27 @@ public class VNPayReturnServlet extends HttpServlet {
                 }
             }
             
-// 3. LƯU VÀO DATABASE (Cả Đơn hàng và Chi tiết đơn)
+            // 3. LƯU VÀO DATABASE (Cả Đơn hàng, Chi tiết đơn và TRỪ KHO)
             if (name != null) {
                 OrderDAO dao = new OrderDAO();
+                ProductDAO pDao = new ProductDAO(); // KHỞI TẠO PRODUCT DAO
                 
                 // Bước 3.1: Lưu thông tin khách và lấy ID Đơn hàng về
                 int newOrderId = dao.insertOrderReturnId(name, phone, address, email, totalAmount, "Đã thanh toán (VNPay)");
                 
-                // Bước 3.2: Nếu tạo đơn thành công, vòng lặp lưu từng món trong giỏ vào Database
+                // Bước 3.2: Nếu tạo đơn thành công
                 if (newOrderId > 0 && cart != null) {
                     for (CartItem item : cart) {
+                        // A. Lưu chi tiết đơn hàng
                         dao.insertOrderDetail(newOrderId, item.getProduct().getId(), item.getQuantity(), item.getProduct().getPrice());
+                        
+                        // B. TRỪ SỐ LƯỢNG HÀNG TRONG KHO
+                        pDao.updateProductQuantity(item.getProduct().getId(), item.getQuantity());
                     }
                 }
             }
             
-            // 4. DỌN DẸP SESSION (Xóa giỏ hàng và thông tin cá nhân)
+            // 4. DỌN DẸP SESSION
             session.removeAttribute("cart");
             session.removeAttribute("cusName");
             session.removeAttribute("cusPhone");
@@ -68,7 +74,6 @@ public class VNPayReturnServlet extends HttpServlet {
             resp.getWriter().println("</div>");
             
         } else {
-            // Thất bại
             resp.getWriter().println("<h1 style='color: red; text-align: center; margin-top: 50px;'>THANH TOÁN THẤT BẠI HOẶC BỊ HỦY!</h1>");
             resp.getWriter().println("<div style='text-align: center;'><a href='cart'>Quay lại Giỏ hàng</a></div>");
         }
