@@ -150,24 +150,22 @@ public class ProductDAO extends DBContext {
         }
         return list;
     }
-    public void updateProductQuantity(int productId, int quantityPurchased) {
-        // QUAN TRỌNG: Hãy chắc chắn bảng của bạn tên là 'products' (có chữ s) 
-        // và cột tên là 'quantity', 'id'.
-        String sql = "UPDATE products SET quantity = quantity - ? WHERE id = ?";
-        try {
+public void updateProductQuantity(int productId, int quantityPurchased) {
+    // Lưu ý: Dùng 'connection' (viết thường) theo đúng file DAO bạn gửi
+    String sql = "UPDATE [dbo].[products] SET [quantity] = [quantity] - ? WHERE [id] = ?";
+    try {
+        if (connection != null) {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, quantityPurchased);
             ps.setInt(2, productId);
-            int rowsUpdated = ps.executeUpdate();
-            
-            if (rowsUpdated > 0) {
-                System.out.println("-> [SUCCESS] Đã trừ kho sản phẩm ID " + productId + " bớt " + quantityPurchased + " món.");
-            } else {
-                System.out.println("-> [ERROR] Không tìm thấy sản phẩm ID " + productId + " để trừ kho.");
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                System.out.println("-> Đã trừ kho thành công cho SP ID: " + productId);
             }
-        } catch (Exception e) {
-            System.out.println("-> [CRITICAL ERROR] Lỗi updateProductQuantity: " + e.getMessage());
-            e.printStackTrace();
         }
+    } catch (Exception e) {
+        System.out.println("Lỗi updateProductQuantity: " + e.getMessage());
+        e.printStackTrace();
     }
+}
 }
