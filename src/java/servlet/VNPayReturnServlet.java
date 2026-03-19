@@ -36,10 +36,10 @@ public class VNPayReturnServlet extends HttpServlet {
                 }
             }
             
-            // 3. LƯU VÀO DATABASE (Cả Đơn hàng, Chi tiết đơn và TRỪ KHO)
+// 3. LƯU VÀO DATABASE (Cả Đơn hàng, Chi tiết đơn và TRỪ KHO)
             if (name != null) {
                 OrderDAO dao = new OrderDAO();
-                ProductDAO pDao = new ProductDAO(); // KHỞI TẠO PRODUCT DAO
+                ProductDAO pDao = new ProductDAO(); // Đã khai báo ở đây rồi
                 
                 // Bước 3.1: Lưu thông tin khách và lấy ID Đơn hàng về
                 int newOrderId = dao.insertOrderReturnId(name, phone, address, email, totalAmount, "Đã thanh toán (VNPay)");
@@ -50,7 +50,7 @@ public class VNPayReturnServlet extends HttpServlet {
                         // A. Lưu chi tiết đơn hàng
                         dao.insertOrderDetail(newOrderId, item.getProduct().getId(), item.getQuantity(), item.getProduct().getPrice());
                         
-                        // B. TRỪ SỐ LƯỢNG HÀNG TRONG KHO
+                        // B. GỌI HÀM TRỪ KHO (Dùng luôn pDao đã khai báo ở trên, không khai báo lại)
                         pDao.updateProductQuantity(item.getProduct().getId(), item.getQuantity());
                     }
                 }
