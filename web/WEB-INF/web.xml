@@ -38,6 +38,14 @@
         <servlet-class>servlet.EditProductServlet</servlet-class>
     </servlet>
     <servlet>
+    <servlet-name>SePayWebhookServlet</servlet-name>
+    <servlet-class>servlet.SePayWebhookServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>SePayWebhookServlet</servlet-name>
+    <url-pattern>/sepay-webhook</url-pattern>
+</servlet-mapping>
+    <servlet>
         <servlet-name>AdminOrderServlet</servlet-name>
         <servlet-class>servlet.AdminOrderServlet</servlet-class>
     </servlet>
