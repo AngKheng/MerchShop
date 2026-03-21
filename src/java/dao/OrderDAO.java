@@ -3,10 +3,10 @@ package dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-    import java.util.ArrayList;
-     import java.util.List;
-     import model.Order;
-     import model.OrderDetail;
+import java.util.ArrayList;
+import java.util.List;
+import model.Order;
+import model.OrderDetail;
 
 public class OrderDAO extends DBContext {
 
@@ -14,7 +14,6 @@ public class OrderDAO extends DBContext {
     public int insertOrderReturnId(String name, String phone, String address, String email, double totalAmount, String status) {
         String sql = "INSERT INTO orders (customer_name, phone, address, email, total_amount, status) VALUES (?, ?, ?, ?, ?, ?)";
         try {
-            // Statement.RETURN_GENERATED_KEYS giúp lấy lại ID vừa được SQL tự động tạo ra
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, name);
             ps.setString(2, phone);
@@ -25,15 +24,14 @@ public class OrderDAO extends DBContext {
             
             ps.executeUpdate();
             
-            // Lấy ID vừa tạo
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
-                return rs.getInt(1); // Trả về mã Order ID (Ví dụ: Đơn số 5)
+                return rs.getInt(1); 
             }
         } catch (Exception e) {
             System.out.println("Lỗi insertOrder: " + e.getMessage());
         }
-        return 0; // Trả về 0 nếu thất bại
+        return 0; 
     }
 
     // 2. Lưu từng món hàng khách đã chọn vào bảng order_details
@@ -44,18 +42,54 @@ public class OrderDAO extends DBContext {
             ps.setInt(1, orderId);
             ps.setInt(2, productId);
             ps.setInt(3, quantity);
-            ps.setDouble(4, price); // Lưu lại giá lúc mua (đề phòng sau này sp tăng/giảm giá)
+            ps.setDouble(4, price); 
             ps.executeUpdate();
         } catch (Exception e) {
             System.out.println("Lỗi insertOrderDetail: " + e.getMessage());
         }
     }
 
-    // 3. Hàm lấy toàn bộ Đơn hàng kèm Chi tiết
+    // --- BỔ SUNG: HÀM CẬP NHẬT TRẠNG THÁI (Dùng cho VNPay/SePay/Admin) ---
+    public boolean updateOrderStatus(int orderId, String newStatus) {
+        String sql = "UPDATE orders SET status = ? WHERE id = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, newStatus);
+            ps.setInt(2, orderId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            System.out.println("Lỗi updateOrderStatus: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // --- BỔ SUNG: HÀM LẤY ĐƠN HÀNG THEO ID (Để kiểm tra trước khi cập nhật) ---
+    public Order getOrderById(int id) {
+        try {
+            String sql = "SELECT * FROM orders WHERE id = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Order(
+                    rs.getInt("id"),
+                    rs.getString("customer_name"),
+                    rs.getString("phone"),
+                    rs.getString("address"),
+                    rs.getDouble("total_amount"),
+                    rs.getString("status")
+                );
+            }
+        } catch (Exception e) {
+            System.out.println("Lỗi getOrderById: " + e.getMessage());
+        }
+        return null;
+    }
+
+    // 3. Hàm lấy toàn bộ Đơn hàng kèm Chi tiết (Giữ nguyên của bạn)
     public List<Order> getAllOrders() {
         List<Order> orders = new ArrayList<>();
         try {
-            // Lấy danh sách đơn hàng
             String sqlOrder = "SELECT * FROM orders ORDER BY id DESC";
             PreparedStatement psOrder = connection.prepareStatement(sqlOrder);
             ResultSet rsOrder = psOrder.executeQuery();
@@ -71,23 +105,28 @@ public class OrderDAO extends DBContext {
                     rsOrder.getString("status")
                 );
                 
-                // Móc nối bảng order_details với products để lấy tên và ảnh
-                String sqlDetail = "SELECT od.quantity, od.price, p.name, p.image FROM order_details od JOIN products p ON od.product_id = p.id WHERE od.order_id = ?";
-                PreparedStatement psDetail = connection.prepareStatement(sqlDetail);
-                psDetail.setInt(1, orderId);
-                ResultSet rsDetail = psDetail.executeQuery();
+// Tìm trong hàm getAllOrders() và thay đoạn lấy chi tiết bằng đoạn này:
+
+String sqlDetail = "SELECT od.product_id, od.quantity, od.price, p.name, p.image " +
+                   "FROM order_details od JOIN products p ON od.product_id = p.id " +
+                   "WHERE od.order_id = ?";
+PreparedStatement psDetail = connection.prepareStatement(sqlDetail);
+psDetail.setInt(1, orderId);
+ResultSet rsDetail = psDetail.executeQuery();
+
+List<OrderDetail> details = new ArrayList<>();
+while(rsDetail.next()) {
+    // Truyền thêm rsDetail.getInt("product_id") vào đầu Constructor
+    details.add(new OrderDetail(
+        rsDetail.getInt("product_id"), 
+        rsDetail.getString("name"),
+        rsDetail.getString("image"),
+        rsDetail.getInt("quantity"),
+        rsDetail.getDouble("price")
+    ));
+}
                 
-                List<OrderDetail> details = new ArrayList<>();
-                while(rsDetail.next()) {
-                    details.add(new OrderDetail(
-                        rsDetail.getString("name"),
-                        rsDetail.getString("image"),
-                        rsDetail.getInt("quantity"),
-                        rsDetail.getDouble("price")
-                    ));
-                }
-                
-                order.setDetails(details); // Nhét các món hàng vào Đơn
+                order.setDetails(details); 
                 orders.add(order);
             }
         } catch(Exception e) {

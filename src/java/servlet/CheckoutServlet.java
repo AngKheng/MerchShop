@@ -1,25 +1,19 @@
 package servlet;
 
+import dao.OrderDAO;
 import model.CartItem;
-import utils.VNPayConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.time.ZonedDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 
 public class CheckoutServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) 
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
             throws ServletException, IOException {
         
-        // Cài đặt UTF-8 để đọc tiếng Việt có dấu (Tên, Địa chỉ) không bị lỗi font
+        // Cài đặt UTF-8 để đọc tiếng Việt không bị lỗi font
         req.setCharacterEncoding("UTF-8");
         
         // 1. Lấy thông tin khách hàng từ Form checkout.jsp
@@ -28,101 +22,54 @@ public class CheckoutServlet extends HttpServlet {
         String cusAddress = req.getParameter("cusAddress");
         String cusEmail = req.getParameter("cusEmail");
 
-        // 2. Cất tạm vào Session. Lát nữa VNPay trả về thành công, mình sẽ lấy mấy cái này ra lưu Database!
+        // 2. Kiểm tra Giỏ hàng từ Session
         HttpSession session = req.getSession();
-        if (cusName != null) {
-            session.setAttribute("cusName", cusName);
-            session.setAttribute("cusPhone", cusPhone);
-            session.setAttribute("cusAddress", cusAddress);
-            session.setAttribute("cusEmail", cusEmail);
-        }
-        
-        // 3. Tính tổng tiền từ Giỏ hàng (Session)
         List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
         
         if (cart == null || cart.isEmpty()) {
-            resp.sendRedirect("home"); // Giỏ trống thì đuổi về trang chủ
+            resp.sendRedirect("home"); 
             return;
         }
 
+        // 3. Tính tổng tiền (USD)
         double totalUSD = 0;
         for (CartItem item : cart) {
             totalUSD += item.getProduct().getPrice() * item.getQuantity();
         }
 
-        // 4. Quy đổi USD sang VNĐ (Giả định 1$ = 25.000đ) và nhân 100 theo luật của VNPay
+        // 4. Quy đổi sang VNĐ để hiện trên mã QR (Giả định 1$ = 25.000đ)
         long amountInVND = (long) (totalUSD * 25000);
-        long vnp_Amount = amountInVND * 100; 
         
-        // 5. Chuẩn bị các tham số gửi sang VNPay
-        String vnp_TxnRef = VNPayConfig.getRandomNumber(8); // Mã đơn hàng ngẫu nhiên
-        String vnp_IpAddr = VNPayConfig.getIpAddress(req); // Lấy IP thực của khách hàng
-        String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
+        // 5. LƯU ĐƠN HÀNG VÀO DATABASE NGAY LẬP TỨC (Trạng thái: Chờ thanh toán)
+        OrderDAO orderDao = new OrderDAO();
+        int newOrderId = orderDao.insertOrderReturnId(cusName, cusPhone, cusAddress, cusEmail, totalUSD, "Chờ thanh toán");
 
-        Map<String, String> vnp_Params = new HashMap<>();
-        vnp_Params.put("vnp_Version", "2.1.0");
-        vnp_Params.put("vnp_Command", "pay");
-        vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf(vnp_Amount));
-        vnp_Params.put("vnp_CurrCode", "VND");
-        vnp_Params.put("vnp_BankCode", "NCB"); // Ép dùng ngân hàng NCB để test cho lẹ
-        vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang MerchShop " + vnp_TxnRef);
-        vnp_Params.put("vnp_OrderType", "other");
-        vnp_Params.put("vnp_Locale", "vn");
-        vnp_Params.put("vnp_ReturnUrl", VNPayConfig.vnp_ReturnUrl);
-        vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
-
-// 6. Tạo ngày giờ (Dùng ZonedDateTime để ép múi giờ)
-        java.time.ZonedDateTime now = java.time.ZonedDateTime.now(java.time.ZoneId.of("Asia/Ho_Chi_Minh"));
-        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-
-        String vnp_CreateDate = now.format(formatter);
-        vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
-
-        String vnp_ExpireDate = now.plusMinutes(15).format(formatter);
-        vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
-
-        // 7. Build chuỗi Query và Mã hóa bảo mật (Chuẩn hóa của VNPay)
-        List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
-        Collections.sort(fieldNames);
-        StringBuilder hashData = new StringBuilder();
-        StringBuilder query = new StringBuilder();
-        Iterator<String> itr = fieldNames.iterator();
-        
-        while (itr.hasNext()) {
-            String fieldName = itr.next();
-            String fieldValue = vnp_Params.get(fieldName);
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                // Build hash data
-                hashData.append(fieldName);
-                hashData.append('=');
-                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-                // Build query
-                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
-                query.append('=');
-                query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-                if (itr.hasNext()) {
-                    query.append('&');
-                    hashData.append('&');
-                }
+        if (newOrderId > 0) {
+            // 6. Lưu chi tiết từng món hàng vào bảng order_details
+            for (CartItem item : cart) {
+                orderDao.insertOrderDetail(newOrderId, item.getProduct().getId(), item.getQuantity(), item.getProduct().getPrice());
             }
+            
+            // 7. Cất thông tin vào Session để trang waiting-payment.jsp hiển thị
+            session.setAttribute("lastOrderId", newOrderId);
+            session.setAttribute("lastAmount", amountInVND);
+            
+            // 8. DỌN DẸP GIỎ HÀNG (Vì đơn đã được lưu vào Database an toàn rồi)
+            session.removeAttribute("cart");
+
+            // 9. CHUYỂN HƯỚNG SANG TRANG CHỜ THANH TOÁN QR
+            resp.sendRedirect("waiting-payment.jsp");
+            
+        } else {
+            // Nếu lưu DB thất bại, báo lỗi
+            resp.getWriter().println("Lỗi: Không thể khởi tạo đơn hàng. Vui lòng thử lại!");
         }
-        
-        String queryUrl = query.toString();
-        // Dùng HashSecret để khóa dữ liệu lại
-        String vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.vnp_HashSecret, hashData.toString());
-        queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-        
-        // 8. Gắn vào link gốc của VNPay và Bẻ lái trình duyệt bay đi!
-        String paymentUrl = VNPayConfig.vnp_PayUrl + "?" + queryUrl;
-        resp.sendRedirect(paymentUrl);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) 
             throws ServletException, IOException {
-        // Chuyển toàn bộ yêu cầu từ POST sang cho hàm doGet xử lý
-        doGet(req, resp); 
+        // Nếu khách cố tình truy cập link qua GET, chuyển về trang chủ
+        resp.sendRedirect("home");
     }
 }
