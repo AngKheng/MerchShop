@@ -2,6 +2,7 @@ package servlet;
 
 import dao.OrderDAO;
 import dao.ProductDAO;
+import model.Order;
 import model.OrderDetail;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -31,11 +32,11 @@ public class SePayWebhookServlet extends HttpServlet {
         }
 
         try {
-            // 2. Phân tích JSON (Cần thư viện GSON)
+            // 2. Phân tích JSON
             JsonObject json = JsonParser.parseString(sb.toString()).getAsJsonObject();
-            String content = json.get("content").getAsString(); // Ví dụ: "DH123"
+            String content = json.get("content").getAsString(); 
             
-            // 3. Tách lấy ID đơn hàng (Chỉ lấy các con số)
+            // 3. Tách lấy ID đơn hàng (Ví dụ: "DH123" -> lấy 123)
             String orderIdStr = content.replaceAll("[^0-9]", ""); 
             
             if (!orderIdStr.isEmpty()) {
@@ -43,32 +44,36 @@ public class SePayWebhookServlet extends HttpServlet {
                 OrderDAO oDao = new OrderDAO();
                 ProductDAO pDao = new ProductDAO();
 
-                // Kiểm tra xem đơn hàng có đang ở trạng thái "Chờ thanh toán" không
-                // Tránh việc SePay bắn tin 2 lần gây trừ kho 2 lần
-                if (oDao.getOrderById(orderId) != null && oDao.getOrderById(orderId).getStatus().equals("Chờ thanh toán")) {
+                // Lấy đơn hàng hiện tại từ Database
+                Order currentOrder = oDao.getOrderById(orderId);
+
+                // KIỂM TRA: Đơn hàng tồn tại VÀ đang ở trạng thái Chờ thanh toán
+                if (currentOrder != null && "Chờ thanh toán".equals(currentOrder.getStatus())) {
                     
                     // A. Cập nhật trạng thái thành Đã thanh toán
                     oDao.updateOrderStatus(orderId, "Đã thanh toán (VietQR-SePay)");
 
-                    // B. Tự động TRỪ KHO (Giống logic VNPay của bạn)
-                    // Ta cần lấy danh sách sản phẩm của đơn hàng này để trừ
-                    // Lưu ý: Bạn cần đảm bảo OrderDAO có hàm lấy chi tiết theo OrderID
-                    // Ở đây mình giả định hàm getAllOrders đã có list details
-                    List<OrderDetail> details = oDao.getOrderById(orderId).getDetails();
+                    // B. Trừ kho
+                    List<OrderDetail> details = currentOrder.getDetails();
                     if (details != null) {
                         for (OrderDetail item : details) {
-                            // Gọi hàm trừ kho của bạn
-                            // Bạn xem lại ProductDAO xem hàm này tên gì nhé (ví dụ updateProductQuantity)
                             pDao.updateProductQuantity(item.getProductId(), item.getQuantity());
                         }
                     }
-                    System.out.println("成功: Đã duyệt đơn #" + orderId + " và trừ kho.");
+                    System.out.println("-> [SEPAY] Duyet don #" + orderId + " thanh cong.");
                 }
-                
-                response.setStatus(HttpServletResponse.SC_OK); // Trả về 200 cho SePay
             }
+
+            // --- BƯỚC QUAN TRỌNG: PHẢN HỒI JSON CHO SEPAY THEO HƯỚNG DẪN ---
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.setStatus(HttpServletResponse.SC_OK); // Trả về 200
+            response.getWriter().write("{\"success\": true}"); // Bắt buộc phải có chuỗi này
+            response.getWriter().flush();
+
         } catch (Exception e) {
             e.printStackTrace();
+            // Nếu lỗi hệ thống, trả về 400 để SePay biết và gửi lại sau
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
