@@ -2,7 +2,6 @@ package servlet;
 
 import dao.OrderDAO;
 import model.Order;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 
@@ -13,7 +12,8 @@ public class CheckStatusServlet extends HttpServlet {
         if (idStr != null) {
             OrderDAO dao = new OrderDAO();
             Order o = dao.getOrderById(Integer.parseInt(idStr));
-            // Nếu đơn hàng đã đổi trạng thái thành "Đã thanh toán..." thì báo về cho JavaScript
+            
+            // Kiểm tra chữ "Đã thanh toán" trong Status của DB
             if (o != null && o.getStatus().contains("Đã thanh toán")) {
                 resp.getWriter().write("success");
                 return;

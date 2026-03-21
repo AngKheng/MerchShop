@@ -29,19 +29,22 @@
         </div>
     </div>
 
-    <script>
-        // Cứ 3 giây lại kiểm tra trạng thái đơn hàng 1 lần
-        // Bạn cần viết thêm 1 Servlet nhỏ checkStatus đơn giản trả về text
-        setInterval(function() {
-            fetch('check-status?id=${lastOrderId}')
-                .then(res => res.text())
-                .then(data => {
-                    if(data === "success") {
-                        alert("Thanh toán thành công! Đang chuyển hướng...");
-                        window.location.href = "home";
-                    }
-                });
-        }, 3000);
-    </script>
+<script>
+    // Kiểm tra trạng thái đơn hàng mỗi 3 giây
+    const checkInterval = setInterval(function() {
+        const orderId = "${lastOrderId}"; // Đảm bảo servlet checkout đã setAttribute này
+        
+        fetch('check-status?id=' + orderId)
+            .then(response => response.text())
+            .then(data => {
+                if (data.trim() === "success") {
+                    clearInterval(checkInterval); // Dừng hỏi khi đã thành công
+                    alert("Thanh toán thành công! Hệ thống sẽ chuyển bạn về trang chủ.");
+                    window.location.href = "home"; 
+                }
+            })
+            .catch(error => console.error('Lỗi kiểm tra:', error));
+    }, 3000);
+</script>
 </body>
 </html>

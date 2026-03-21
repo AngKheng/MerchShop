@@ -1,28 +1,19 @@
 package servlet;
 
 import dao.OrderDAO;
-import dao.ProductDAO;
-import model.Order;
-import model.OrderDetail;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.*;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.List;
 
-@WebServlet(name = "SePayWebhook", urlPatterns = {"/sepay-webhook"})
 public class SePayWebhookServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        // 1. Đọc dữ liệu JSON từ SePay gửi qua
         StringBuilder sb = new StringBuilder();
         String line;
         try (BufferedReader reader = request.getReader()) {
@@ -32,48 +23,54 @@ public class SePayWebhookServlet extends HttpServlet {
         }
 
         try {
-            // 2. Phân tích JSON
+            // 1. Đọc dữ liệu JSON
             JsonObject json = JsonParser.parseString(sb.toString()).getAsJsonObject();
-            String content = json.get("content").getAsString(); 
+            String content = json.get("content").getAsString(); // Ví dụ: "DH123 thanh toan..."
             
-            // 3. Tách lấy ID đơn hàng (Ví dụ: "DH123" -> lấy 123)
-            String orderIdStr = content.replaceAll("[^0-9]", ""); 
-            
-            if (!orderIdStr.isEmpty()) {
-                int orderId = Integer.parseInt(orderIdStr);
-                OrderDAO oDao = new OrderDAO();
-                ProductDAO pDao = new ProductDAO();
+            // 2. Tách ID đơn hàng thông minh (Chỉ lấy số sau chữ DH)
+            String orderIdStr = "";
+            int index = content.toUpperCase().indexOf("DH");
 
-                // Lấy đơn hàng hiện tại từ Database
-                Order currentOrder = oDao.getOrderById(orderId);
-
-                // KIỂM TRA: Đơn hàng tồn tại VÀ đang ở trạng thái Chờ thanh toán
-                if (currentOrder != null && "Chờ thanh toán".equals(currentOrder.getStatus())) {
-                    
-                    // A. Cập nhật trạng thái thành Đã thanh toán
-                    oDao.updateOrderStatus(orderId, "Đã thanh toán (VietQR-SePay)");
-
-                    // B. Trừ kho
-                    List<OrderDetail> details = currentOrder.getDetails();
-                    if (details != null) {
-                        for (OrderDetail item : details) {
-                            pDao.updateProductQuantity(item.getProductId(), item.getQuantity());
-                        }
+            if (index != -1) {
+                // Lấy phần chuỗi bắt đầu từ sau chữ "DH"
+                String sauDH = content.substring(index + 2).trim();
+                
+                // Duyệt để lấy các con số liên tiếp ngay sau đó
+                StringBuilder sbId = new StringBuilder();
+                for (int i = 0; i < sauDH.length(); i++) {
+                    char c = sauDH.charAt(i);
+                    if (Character.isDigit(c)) {
+                        sbId.append(c);
+                    } else {
+                        // Gặp khoảng trắng hoặc ký tự khác thì dừng lại
+                        break; 
                     }
-                    System.out.println("-> [SEPAY] Duyet don #" + orderId + " thanh cong.");
                 }
+                orderIdStr = sbId.toString();
+            }
+            
+            // 3. Xử lý cập nhật Database
+            if (!orderIdStr.isEmpty()) {
+                // Dùng Long.parseLong cho an toàn hoặc Integer nếu mã đơn hàng của bạn ngắn
+                int orderId = Integer.parseInt(orderIdStr);
+                OrderDAO dao = new OrderDAO();
+                
+                // Cập nhật trạng thái
+                dao.updateOrderStatus(orderId, "Đã thanh toán (VietQR-SePay)");
+                System.out.println("-> [SEPAY] Da duyet don hang #" + orderId);
+            } else {
+                System.out.println("-> [SEPAY] Khong tim thay ma DH trong noi dung: " + content);
             }
 
-            // --- BƯỚC QUAN TRỌNG: PHẢN HỒI JSON CHO SEPAY THEO HƯỚNG DẪN ---
+            // 4. Phản hồi bắt buộc cho SePay
             response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.setStatus(HttpServletResponse.SC_OK); // Trả về 200
-            response.getWriter().write("{\"success\": true}"); // Bắt buộc phải có chuỗi này
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write("{\"success\": true}");
             response.getWriter().flush();
 
         } catch (Exception e) {
+            System.err.println("-> [SEPAY ERROR] " + e.getMessage());
             e.printStackTrace();
-            // Nếu lỗi hệ thống, trả về 400 để SePay biết và gửi lại sau
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
     }

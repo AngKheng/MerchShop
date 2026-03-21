@@ -46,8 +46,8 @@
         <servlet-class>servlet.AdminLoginServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>NewServlet</servlet-name>
-        <servlet-class>servlet.NewServlet</servlet-class>
+        <servlet-name>CheckStatusServlet</servlet-name>
+        <servlet-class>servlet.CheckStatusServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
@@ -143,7 +143,7 @@
         <url-pattern>/loadproduct</url-pattern>
     </filter-mapping>
     <servlet-mapping>
-        <servlet-name>NewServlet</servlet-name>
+        <servlet-name>CheckStatusServlet</servlet-name>
         <url-pattern>/check-status</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
