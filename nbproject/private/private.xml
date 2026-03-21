@@ -3,11 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Admin/Documents/GitHub/MerchShop/web/admin-orders.jsp</file>
-            <file>file:/C:/Users/Admin/Documents/GitHub/MerchShop/web/add-product.jsp</file>
-            <file>file:/C:/Users/Admin/Documents/GitHub/MerchShop/web/admin-login.jsp</file>
-            <file>file:/C:/Users/Admin/Documents/GitHub/MerchShop/web/index.jsp</file>
-            <file>file:/C:/Users/Admin/Documents/GitHub/MerchShop/web/admin.jsp</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/MerchShop/src/java/dao/ProductDAO.java</file>
+            <file>file:/C:/Users/Admin/Documents/GitHub/MerchShop/src/java/servlet/VNPayReturnServlet.java</file>
         </group>
     </open-files>
 </project-private>

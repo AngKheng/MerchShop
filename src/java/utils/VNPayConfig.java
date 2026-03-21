@@ -12,7 +12,7 @@ public class VNPayConfig {
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     
     // ĐÃ SỬA: Link Render chính thức
-    public static String vnp_ReturnUrl = "https://merchshop-production.up.railway.app/vnpay-return";
+    public static String vnp_ReturnUrl = "https://merchshop.onrender.com/vnpay-return";
 
     public static String hmacSHA512(final String key, final String data) {
         try {
