@@ -63,28 +63,52 @@ public class OrderDAO extends DBContext {
         }
     }
 
-    // --- BỔ SUNG: HÀM LẤY ĐƠN HÀNG THEO ID (Để kiểm tra trước khi cập nhật) ---
-    public Order getOrderById(int id) {
-        try {
-            String sql = "SELECT * FROM orders WHERE id = ?";
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return new Order(
-                    rs.getInt("id"),
-                    rs.getString("customer_name"),
-                    rs.getString("phone"),
-                    rs.getString("address"),
-                    rs.getDouble("total_amount"),
-                    rs.getString("status")
-                );
+public Order getOrderById(int id) {
+    try {
+        // 1. Lấy thông tin chính của đơn hàng
+        String sql = "SELECT * FROM orders WHERE id = ?";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+        
+        if (rs.next()) {
+            Order order = new Order(
+                rs.getInt("id"),
+                rs.getString("customer_name"),
+                rs.getString("phone"),
+                rs.getString("address"),
+                rs.getDouble("total_amount"),
+                rs.getString("status")
+            );
+
+            // 2. LẤY CHI TIẾT CÁC MÓN HÀNG TRONG ĐƠN (Cực kỳ quan trọng để trừ kho)
+            List<OrderDetail> details = new ArrayList<>();
+            String sqlDetail = "SELECT od.product_id, od.quantity, od.price, p.name, p.image " +
+                               "FROM order_details od JOIN products p ON od.product_id = p.id " +
+                               "WHERE od.order_id = ?";
+            PreparedStatement psDetail = connection.prepareStatement(sqlDetail);
+            psDetail.setInt(1, id);
+            ResultSet rsDetail = psDetail.executeQuery();
+
+            while (rsDetail.next()) {
+                details.add(new OrderDetail(
+                    rsDetail.getInt("product_id"),
+                    rsDetail.getString("name"),
+                    rsDetail.getString("image"),
+                    rsDetail.getInt("quantity"),
+                    rsDetail.getDouble("price")
+                ));
             }
-        } catch (Exception e) {
-            System.out.println("Lỗi getOrderById: " + e.getMessage());
+            
+            // Gán danh sách chi tiết vào đối tượng order
+            order.setDetails(details);
+            return order;
         }
-        return null;
+    } catch (Exception e) {
+        System.out.println("Lỗi getOrderById: " + e.getMessage());
     }
+    return null;
+}
 
     // 3. Hàm lấy toàn bộ Đơn hàng kèm Chi tiết (Giữ nguyên của bạn)
     public List<Order> getAllOrders() {
