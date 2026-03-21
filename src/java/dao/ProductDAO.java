@@ -151,27 +151,17 @@ public class ProductDAO extends DBContext {
         return list;
     }
 public void updateProductQuantity(int productId, int quantityPurchased) {
-    // Thêm [dbo] và dấu ngoặc vuông để tránh trùng từ khóa hệ thống
-    String sql = "UPDATE [dbo].[products] SET [quantity] = ISNULL([quantity], 100) - ? WHERE [id] = ?";
+    // Câu lệnh SQL tối giản nhất
+    String sql = "UPDATE products SET quantity = quantity - ? WHERE id = ?";
     try {
-        // Kiểm tra kết nối trước khi chạy
-        if (connection == null || connection.isClosed()) {
-            System.out.println("-> [ERROR] Mất kết nối Database!");
-            return;
-        }
-        
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1, quantityPurchased);
         ps.setInt(2, productId);
         
         int rowsAffected = ps.executeUpdate();
-        
-        // Log này cực kỳ quan trọng để debug trên Render
-        System.out.println("-> [DEBUG] Thực hiện trừ kho SP ID: " + productId + " | Số lượng: " + quantityPurchased + " | Số dòng bị tác động: " + rowsAffected);
-        
+        System.out.println("-> [INVENTORY] ID: " + productId + " | Tru: " + quantityPurchased + " | Thanh cong: " + (rowsAffected > 0));
     } catch (Exception e) {
-        System.out.println("-> [CRITICAL] Lỗi updateProductQuantity: " + e.getMessage());
-        e.printStackTrace();
+        System.out.println("-> [ERROR SQL] " + e.getMessage());
     }
 }
 }
