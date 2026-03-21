@@ -1,6 +1,9 @@
 package servlet;
 
 import dao.OrderDAO;
+import dao.ProductDAO;
+import model.Order;
+import model.OrderDetail;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import com.google.gson.JsonObject;
@@ -14,7 +17,6 @@ public class SePayWebhookServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        // Dòng này để xác nhận tín hiệu đã vào tới Code Java
         System.out.println("--- [SEPAY WEBHOOK CALLED] ---");
         
         StringBuilder sb = new StringBuilder();
@@ -26,11 +28,8 @@ public class SePayWebhookServlet extends HttpServlet {
         }
 
         String rawData = sb.toString();
-        System.out.println("-> [DEBUG] Raw Data: " + rawData);
-
         try {
             if (rawData.isEmpty()) {
-                System.out.println("-> [ERROR] Payload bi trong!");
                 response.setStatus(400);
                 return;
             }
@@ -46,24 +45,39 @@ public class SePayWebhookServlet extends HttpServlet {
                 StringBuilder sbId = new StringBuilder();
                 for (int i = 0; i < sauDH.length(); i++) {
                     char c = sauDH.charAt(i);
-                    if (Character.isDigit(c)) {
-                        sbId.append(c);
-                    } else {
-                        break; 
-                    }
+                    if (Character.isDigit(c)) { sbId.append(c); } else { break; }
                 }
                 orderIdStr = sbId.toString();
             }
             
             if (!orderIdStr.isEmpty()) {
                 int orderId = Integer.parseInt(orderIdStr);
-                OrderDAO dao = new OrderDAO();
-                boolean success = dao.updateOrderStatus(orderId, "Đã thanh toán (VietQR-SePay)");
+                OrderDAO oDao = new OrderDAO();
                 
-                if(success) {
-                    System.out.println("-> [SUCCESS] Da duyet don hang #" + orderId);
+                // 1. Lấy thông tin đơn hàng hiện tại từ DB
+                Order order = oDao.getOrderById(orderId);
+                
+                // Chỉ xử lý nếu đơn hàng tồn tại và CHƯA được thanh toán trước đó
+                if (order != null && !order.getStatus().contains("Đã thanh toán")) {
+                    
+                    // 2. Cập nhật trạng thái đơn hàng thành Đã thanh toán
+                    boolean updateOrderOk = oDao.updateOrderStatus(orderId, "Đã thanh toán (VietQR-SePay)");
+                    
+                    if (updateOrderOk) {
+                        System.out.println("-> [SUCCESS] Da duyet don hang #" + orderId);
+                        
+                        // 3. THỰC HIỆN TRỪ KHO
+                        ProductDAO pDao = new ProductDAO();
+                        if (order.getDetails() != null && !order.getDetails().isEmpty()) {
+                            for (OrderDetail detail : order.getDetails()) {
+                                // Gọi hàm trừ kho mà bạn đã viết trong ProductDAO
+                                pDao.updateProductQuantity(detail.getProductId(), detail.getQuantity());
+                                System.out.println("-> [INVENTORY] Da tru " + detail.getQuantity() + " SP ID: " + detail.getProductId());
+                            }
+                        }
+                    }
                 } else {
-                    System.out.println("-> [DB ERROR] Khong the update don hang #" + orderId);
+                    System.out.println("-> [INFO] Don hang #" + orderId + " khong ton tai hoac da thanh toan tu truoc.");
                 }
             }
 
@@ -75,9 +89,8 @@ public class SePayWebhookServlet extends HttpServlet {
         } catch (Exception e) {
             System.err.println("-> [CRITICAL ERROR] " + e.getMessage());
             e.printStackTrace();
-            // Tra ve 200 de SePay hien mau xanh, minh de debug hon
             response.setStatus(200); 
-            response.getWriter().write("{\"success\": false, \"error\": \"" + e.getMessage() + "\"}");
+            response.getWriter().write("{\"success\": false}");
         }
     }
 }
